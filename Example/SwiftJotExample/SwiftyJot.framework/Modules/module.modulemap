@@ -1,0 +1,10 @@
+framework module SwiftyJot {
+  umbrella header "SwiftyJot.h"
+
+  export *
+  module * { export * }
+}
+
+module SwiftyJot.Swift {
+    header "SwiftyJot-Swift.h"
+}
