@@ -11,23 +11,23 @@ import QuartzCore
 import SnapKit
 
 
-@objc public protocol JotTextEditViewDelegate: class {
+protocol JotTextEditViewDelegate: class {
     /**
      *  Called whenever the JotTextEditView ends text editing (keyboard entry) mode.
      *
      *  @param textString    The new text string after editing
      */
-    optional func jotTextEditViewFinishedEditingWithNewTextString(textString: String)
+    func jotTextEditViewFinishedEditingWithNewTextString(textString: String)
 }
 
 /**
  *  Private class to handle text editing. Change the properties
  *  in a JotViewController instance to configure this private class.
  */
-public class JotTextEditView: UIView, JotTextEditViewDelegate {
+class JotTextEditView: UIView {
     
-    public var textView: UITextView!
-    public var textContainer: UIView!
+    var textView: UITextView!
+    var textContainer: UIView!
     var topGradient: CAGradientLayer!
     var bottomGradient: CAGradientLayer!
     
@@ -64,7 +64,7 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
                     self.textString = self.textView.text!
                     self.textView.resignFirstResponder()
                     //if self.delegate.respondsToSelector("jotTextEditViewFinishedEditingWithNewTextString:") {
-                        self.delegate!.jotTextEditViewFinishedEditingWithNewTextString!(textString)
+                        self.delegate!.jotTextEditViewFinishedEditingWithNewTextString(textString)
                     //}
                 }
             }
@@ -77,29 +77,25 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
      *  @note Set textString in JotViewController
      *  to control or read this property.
      */
-    public var textString : String = " " {
-        
-        //First this
-        willSet {
-            print("Old value is \(textString), new value is \(newValue)")
+    var textString: String {
+        get {
+            return self.textString
         }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(textString)")
-            textView.text = textString
-            textView.setContentOffset(CGPointZero, animated: false)
+        set(textString) {
+            if !(textString == textString) {
+                self.textString = textString
+                self.textView.text = textString
+                self.textView.setContentOffset(CGPointZero, animated: false)
+            }
         }
     }
+
     /**
      *  The color of the text displayed in the JotTextEditView.
      *
      *  @note Set textColor in JotViewController
      *  to control this property.
      */
-    /*
     var textColor: UIColor {
         get {
             return self.textColor
@@ -111,24 +107,6 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
             }
         }
     }
-    */
-    
-    //True model data
-    var textColor : UIColor = UIColor.blackColor() {
-        
-        //First this
-        willSet {
-            print("Old value is \(textColor), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(textColor)")
-            self.textView.textColor = textColor
-        }
-    }
 
     /**
      *  The font of the text displayed in the JotTextEditView.
@@ -137,7 +115,6 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
      *  To change the default size of the font, you must also set the
      *  fontSize property to the desired font size.
      */
-    /*
     var font: UIFont {
         get {
             return self.font
@@ -149,22 +126,6 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
             }
         }
     }
-    */
-    //True model data
-    var font : UIFont = UIFont.systemFontOfSize(20) {
-        
-        //First this
-        willSet {
-            print("Old value is \(font), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(font)")
-        }
-    }
 
     /**
      *  The font size of the text displayed in the JotTextEditView.
@@ -172,7 +133,6 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
      *  @note Set fontSize in JotViewController to control this property,
      *  which overrides the size of the font property.
      */
-    /*
     var fontSize: CGFloat {
         get {
             return self.fontSize
@@ -182,22 +142,6 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
                 self.fontSize = fontSize
                 //self.textView.font = font(size: fontSize)
             }
-        }
-    }
-    */
-    //True model data
-    var fontSize : CGFloat = 0 {
-        
-        //First this
-        willSet {
-            print("Old value is \(fontSize), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(fontSize)")
         }
     }
 
@@ -226,7 +170,6 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
      *
      *  @note Set textEditingInsets in JotViewController to control this property.
      */
-    /*
     var textEditingInsets: UIEdgeInsets {
         get {
             return self.textEditingInsets
@@ -241,27 +184,6 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
                 self.textView.setContentOffset(CGPointZero, animated: false)
             }
         }
-    } */
-    
-    //True model data
-    var textEditingInsets : UIEdgeInsets = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0) {
-        
-        //First this
-        willSet {
-            print("Old value is \(textEditingInsets), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(textEditingInsets)")
-            self.textView.snp_makeConstraints { (make) -> Void in
-                make.edges.equalTo(self.textContainer).inset(textEditingInsets)
-            }
-            self.textView.layoutIfNeeded()
-            self.textView.setContentOffset(CGPointZero, animated: false)
-        }
     }
 
     /**
@@ -272,7 +194,6 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
      *
      *  @note Set clipBoundsToEditingInsets in JotViewController to control this property.
      */
-    /*
     var clipBoundsToEditingInsets: Bool {
         get {
             return self.clipBoundsToEditingInsets
@@ -284,36 +205,10 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
                 self.setupGradientMask()
             }
         }
-    } */
-    
-    //True model data
-    var clipBoundsToEditingInsets : Bool = true {
-        
-        //First this
-        willSet {
-            print("Old value is \(clipBoundsToEditingInsets), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(clipBoundsToEditingInsets)")
-            self.textView.clipsToBounds = clipBoundsToEditingInsets
-            self.setupGradientMask()
-        }
-    }
-    
-    override init(frame: CGRect) {
-        super.init(frame:frame)
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder);
     }
 
     convenience init() {
-        self.init(frame: CGRectZero)
+        self.init()
             self.backgroundColor = UIColor.clearColor()
             self.font = UIFont.systemFontOfSize(40.0)
             self.fontSize = 40.0
@@ -375,7 +270,7 @@ public class JotTextEditView: UIView, JotTextEditViewDelegate {
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
-    override public func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         self.setupGradientMask()
     }

@@ -11,7 +11,7 @@ import SnapKit
 /**
  *  The possible states of the JotViewController
  */
-public enum JotViewState : Int    /**
+enum JotViewState : Int    /**
          *  The default state, which does not allow
          *  any touch interactions.
          */
@@ -36,14 +36,14 @@ public enum JotViewState : Int    /**
 }
 
 
-@objc public protocol JotViewControllerDelegate: class {
+@objc protocol JotViewControllerDelegate: class {
     /**
      *  Called whenever the JotViewController begins or ends text editing (keyboard entry) mode.
      *
      *  @param jotViewController The draw text view controller
      *  @param isEditing    YES if entering edit (keyboard text entry) mode, NO if exiting edit mode
      */
-     optional func jotViewController(jotViewController: JotViewController, isEditingText isEditing: Bool)
+    @objc func jotViewController(jotViewController: JotViewController, isEditingText isEditing: Bool)
 }
 
 /**
@@ -57,18 +57,19 @@ public enum JotViewState : Int    /**
  *  background for a sketchpad/whiteboard-like interface, or above a photo
  *  for a photo annotation interface.
  */
-public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDrawingContainerDelegate{
+public class JotViewController: UIViewController {
     /**
      *  The delegate of the JotViewController instance.
      */
-    public var delegate: JotViewControllerDelegate?
-    public var tapRecognizer: UITapGestureRecognizer?
-    public var pinchRecognizer: UIPinchGestureRecognizer?
-    public var rotationRecognizer: UIRotationGestureRecognizer?
-    public var panRecognizer: UIPanGestureRecognizer?
-    public var drawView: JotDrawView!
-    public var textEditView: JotTextEditView!
-    public var textView: JotTextView!
+    weak var delegate: JotViewControllerDelegate?
+    
+    var tapRecognizer: UITapGestureRecognizer!
+    var pinchRecognizer: UIPinchGestureRecognizer!
+    var rotationRecognizer: UIRotationGestureRecognizer!
+    var panRecognizer: UIPanGestureRecognizer!
+    var drawView: JotDrawView!
+    var textEditView: JotTextEditView!
+    var textView: JotTextView!
     
     
     /**
@@ -81,9 +82,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *  @note The JotViewController's delegate will get updates when it enters and exits
      *  text editing mode, in case you need to update your interface to reflect this.
      */
-     public var state: JotViewState = JotViewState.Drawing
-    /*
-    {
+     var state: JotViewState {
         get {
             return self.state
         }
@@ -94,7 +93,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
                 //let isEditing = (state == .EditingText)
                 //func jotViewController(jotViewController: JotViewController, isEditingText isEditing: Bool)
                 if state == .EditingText {
-                    self.delegate!.jotViewController!(self, isEditingText: true)
+                    self.delegate!.jotViewController(self, isEditingText: true)
                 }
                 /*
                 self.drawingContainer.multipleTouchEnabled =
@@ -106,7 +105,6 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             }
         }
     }
-    */
 
     /**
      *  The font of the text displayed in the JotTextView and JotTextEditView.
@@ -114,8 +112,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *  @note To change the default size of the font, you must also set the
      *  fontSize property to the desired font size.
      */
-    /*
-    public var font: UIFont {
+    var font: UIFont {
         get {
             return self.font
         }
@@ -127,23 +124,6 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             }
         }
     }
-    */
-    //True model data
-    public var font: UIFont = UIFont.systemFontOfSize(20){
-        
-        //First this
-        willSet {
-            print("Old value is \(font), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(font)")
-            self.textView.font = self.textEditView.font
-        }
-    }
 
     /**
      *  The initial font size of the text displayed in the JotTextView before pinch zooming,
@@ -151,8 +131,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *
      *  @note This property overrides the size of the font property.
      */
-    /*
-    public var fontSize: CGFloat {
+    var fontSize: CGFloat {
         get {
             return self.fontSize
         }
@@ -164,29 +143,11 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             }
         }
     }
-    */
-    //True model data
-    public var fontSize : CGFloat = 16 {
-        
-        //First this
-        willSet {
-            print("Old value is \(fontSize), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(fontSize)")
-            self.textView.fontSize = self.textEditView.fontSize
-        }
-    }
 
     /**
      *  The color of the text displayed in the JotTextView and the JotTextEditView.
      */
-    /*
-    public var textColor: UIColor {
+    var textColor: UIColor {
         get {
             return self.textColor
         }
@@ -198,29 +159,11 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             }
         }
     }
-    */
-    
-    //True model data
-    public var textColor : UIColor = UIColor.blackColor() {
-        
-        //First this
-        willSet {
-            print("Old value is \(textColor), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(textColor)")
-            self.textView.textColor = self.textEditView.textColor
-        }
-    }
 
     /**
      *  The text string the JotTextView and JotTextEditView are displaying.
      */
-    public var textString: String {
+    var textString: String {
         get {
             return self.textString
         }
@@ -242,7 +185,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *  applies if fitOriginalFontSizeToViewWidth is true, and the alignment of the
      *  text displayed in the JotTextEditView regardless of other settings.
      */
-    public var textAlignment: NSTextAlignment {
+    var textAlignment: NSTextAlignment {
         get {
             return self.textAlignment
         }
@@ -258,7 +201,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
     /**
      *  Sets the stroke color for drawing. Each drawing path can have its own stroke color.
      */
-    public var drawingColor: UIColor {
+    var drawingColor: UIColor {
         get {
             return self.drawingColor
         }
@@ -274,7 +217,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *  Sets the stroke width for drawing if constantStrokeWidth is true, or sets
      *  the base strokeWidth for variable drawing paths constantStrokeWidth is false.
      */
-    public var drawingStrokeWidth: CGFloat {
+    var drawingStrokeWidth: CGFloat {
         get {
             return self.drawingStrokeWidth
         }
@@ -308,7 +251,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *  with a gradient to the edges of the JotTextEditView. If clipBoundsToEditingInsets
      *  is true, then the text will be clipped at the inset instead of fading out.
      */
-    public var textEditingInsets: UIEdgeInsets {
+    var textEditingInsets: UIEdgeInsets {
         get {
             return self.textEditingInsets
         }
@@ -329,7 +272,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *
      *  @note This will be ignored if fitOriginalFontSizeToViewWidth is false.
      */
-    public var initialTextInsets: UIEdgeInsets {
+    var initialTextInsets: UIEdgeInsets {
         get {
             return self.initialTextInsets
         }
@@ -384,7 +327,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         }
     }
 
-    public var drawingContainer: JotDrawingContainer!
+    var drawingContainer: JotDrawingContainer!
 
     /**
      *  Clears all paths from the drawing in and sets the text to an empty string, giving a blank slate.
@@ -460,27 +403,15 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
     public func renderImageWithScale(scale: CGFloat, onColor color: UIColor) -> UIImage {
         return self.renderImageWithSize(CGSizeMake(CGRectGetWidth(self.drawingContainer.frame) * scale, CGRectGetHeight(self.drawingContainer.frame) * scale), onColor: color)
     }
-    
-    
-    
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
 
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    }
-
-    
-    
     public convenience init() {
-        self.init(nibName: nil, bundle: nil)
+        self.init()
             self.drawView = JotDrawView()
             self.textEditView = JotTextEditView()
-            self.textEditView.delegate = self
+            //self.textEditView.delegate = self
             self.textView = JotTextView()
             self.drawingContainer = JotDrawingContainer()
-            self.drawingContainer.delegate = self
+            //self.drawingContainer.delegate = self
             self.font = self.textView.font
             self.textEditView.font = self.font
             self.fontSize = self.textView.fontSize
@@ -490,19 +421,19 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             self.textColor = self.textView.textColor
             self.textEditView.textColor = self.textColor
             self.textString = ""
-            self.drawingColor = self.drawView.strokeColor!
+            self.drawingColor = self.drawView.strokeColor
             self.drawingStrokeWidth = self.drawView.strokeWidth
             self.textEditingInsets = self.textEditView.textEditingInsets
             self.initialTextInsets = self.textView.initialTextInsets
             self.state = .Default
             self.pinchRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(JotViewController.handlePinchOrRotateGesture(_:)))
-            self.pinchRecognizer!.delegate = self
+            self.pinchRecognizer.delegate = self
             self.rotationRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(JotViewController.handlePinchOrRotateGesture(_:)))
-            self.rotationRecognizer!.delegate = self
+            self.rotationRecognizer.delegate = self
             self.panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(JotViewController.handlePanGesture(_:)))
-            self.panRecognizer!.delegate = self
+            self.panRecognizer.delegate = self
             self.tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(JotViewController.handleTapGesture(_:)))
-            self.tapRecognizer!.delegate = self
+            self.tapRecognizer.delegate = self
     }
     
     deinit {
@@ -530,10 +461,10 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         self.textEditView.snp_makeConstraints { (make) -> Void in
             make.edges.equalTo(self.view!)
         }
-        self.drawingContainer.addGestureRecognizer(self.tapRecognizer!)
-        self.drawingContainer.addGestureRecognizer(self.panRecognizer!)
-        self.drawingContainer.addGestureRecognizer(self.rotationRecognizer!)
-        self.drawingContainer.addGestureRecognizer(self.pinchRecognizer!)
+        self.drawingContainer.addGestureRecognizer(self.tapRecognizer)
+        self.drawingContainer.addGestureRecognizer(self.panRecognizer)
+        self.drawingContainer.addGestureRecognizer(self.rotationRecognizer)
+        self.drawingContainer.addGestureRecognizer(self.pinchRecognizer)
     }
 
     public func renderImageWithSize(size: CGSize) -> UIImage {
@@ -590,12 +521,12 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         return false
     }
 
-    public func jotTextEditViewFinishedEditingWithNewTextString(textString: String) {
+    func jotTextEditViewFinishedEditingWithNewTextString(textString: String) {
         if self.state == .EditingText {
             self.state = .Text
         }
         self.textString = textString
-        self.delegate!.jotViewController!(self, isEditingText: false)
+        self.delegate!.jotViewController(self, isEditingText: false)
 
     }
 

@@ -7,25 +7,24 @@
 //
 import UIKit
 import Foundation
-
-public class JotDrawingContainer: UIView {
+class JotDrawingContainer: UIView {
     /**
      *  The delegate of the JotDrawingContainer, which receives
      *  updates about touch events in the drawing container.
      */
     weak var delegate: JotDrawingContainerDelegate?
 
-    override public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         super.touchesBegan(touches, withEvent: event)
         self.delegate!.jotDrawingContainerTouchBeganAtPoint(touches.first!.locationInView(self))
     }
 
-    override public func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
         super.touchesMoved(touches, withEvent: event)
         self.delegate!.jotDrawingContainerTouchMovedToPoint(touches.first!.locationInView(self))
     }
 
-    override public func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         super.touchesEnded(touches, withEvent: event)
         self.delegate!.jotDrawingContainerTouchEnded()
     }
@@ -52,3 +51,10 @@ protocol JotDrawingContainerDelegate: class {
 
     func jotDrawingContainerTouchEnded()
 }
+//
+//  JotDrawingContainer.m
+//  jot
+//
+//  Created by Laura Skelton on 5/12/15.
+//
+//

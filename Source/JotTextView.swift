@@ -12,7 +12,7 @@ import Foundation
  *  Change the properties in a JotViewController instance to 
  *  configure this private class.
  */
-public class JotTextView: UIView {
+class JotTextView: UIView {
     
     var textLabel: UILabel!
     var textEditingContainer: UIView!
@@ -29,7 +29,6 @@ public class JotTextView: UIView {
      *  @note Set textString in JotViewController
      *  to control or read this property.
      */
-    /*
     var textString: String {
         get {
             return self.textString
@@ -44,26 +43,6 @@ public class JotTextView: UIView {
             }
         }
     }
-    */
-    //True model data
-    var textString : String = " " {
-        
-        //First this
-        willSet {
-            print("Old value is \(textString), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(textString)")
-            let center: CGPoint = self.textLabel.center
-            self.textLabel.text = textString
-            self.sizeLabel()
-            self.textLabel.center = center
-        }
-    }
 
     /**
      *  The color of the text displayed in the JotTextView.
@@ -71,7 +50,6 @@ public class JotTextView: UIView {
      *  @note Set textColor in JotViewController
      *  to control this property.
      */
-    /*
     var textColor: UIColor {
         get {
             return self.textColor
@@ -83,24 +61,6 @@ public class JotTextView: UIView {
             }
         }
     }
-    */
-    
-    //True model data
-    var textColor : UIColor = UIColor.blueColor() {
-        
-        //First this
-        willSet {
-            print("Old value is \(textColor), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(textColor)")
-            self.textLabel.textColor = textColor
-        }
-    }
 
     /**
      *  The font of the text displayed in the JotTextView.
@@ -109,7 +69,6 @@ public class JotTextView: UIView {
      *  To change the default size of the font, you must also set the
      *  fontSize property to the desired font size.
      */
-    /*
     var font: UIFont {
         get {
             return self.font
@@ -121,24 +80,6 @@ public class JotTextView: UIView {
             }
         }
     }
-    */
-    
-    //True model data
-    var font : UIFont = UIFont() {
-        
-        //First this
-        willSet {
-            print("Old value is \(font), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(font)")
-            self.adjustLabelFont()
-        }
-    }
 
     /**
      *  The initial font size of the text displayed in the JotTextView. The
@@ -148,7 +89,6 @@ public class JotTextView: UIView {
      *  @note Set fontSize in JotViewController to control this property,
      *  which overrides the size of the font property.
      */
-    /*
     var fontSize: CGFloat {
         get {
             return self.fontSize
@@ -160,22 +100,6 @@ public class JotTextView: UIView {
             }
         }
     }
-    */
-    
-    //True model data
-    var fontSize : CGFloat = 0 {
-        
-        //First this
-        willSet {
-            print("Old value is \(fontSize), new value is \(newValue)")
-        }
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(fontSize)")
-            self.adjustLabelFont()
-        }
-    }
 
     /**
      *  The alignment of the text displayed in the JotTextView, which only
@@ -184,7 +108,6 @@ public class JotTextView: UIView {
      *  @note Set textAlignment in JotViewController to control this property,
      *  which will be ignored if fitOriginalFontSizeToViewWidth is false.
      */
-    /*
     var textAlignment: NSTextAlignment {
         get {
             return self.textAlignment
@@ -197,25 +120,6 @@ public class JotTextView: UIView {
             }
         }
     }
-    */
-    //True model data
-    var textAlignment : NSTextAlignment = NSTextAlignment.Center {
-        
-        //First this
-        willSet {
-            print("Old value is \(textAlignment), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(textAlignment)")
-            self.textLabel.textAlignment = self.textAlignment
-            self.sizeLabel()
-        }
-    }
-    
 
     /**
      *  The initial insets of the text displayed in the JotTextView, which only
@@ -227,7 +131,6 @@ public class JotTextView: UIView {
      *  @note Set initialTextInsets in JotViewController to control this property,
      *  which will be ignored if fitOriginalFontSizeToViewWidth is false.
      */
-    /*
     var initialTextInsets: UIEdgeInsets {
         get {
             return self.initialTextInsets
@@ -237,23 +140,6 @@ public class JotTextView: UIView {
                 self.initialTextInsets = initialTextInsets
                 self.sizeLabel()
             }
-        }
-    }
-    */
-    //True model data
-    var initialTextInsets : UIEdgeInsets = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0) {
-        
-        //First this
-        willSet {
-            print("Old value is \(initialTextInsets), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(initialTextInsets)")
-            self.sizeLabel()
         }
     }
 
@@ -266,7 +152,6 @@ public class JotTextView: UIView {
      *
      *  @note Set fitOriginalFontSizeToViewWidth in JotViewController to control this property.
      */
-    /*
     var fitOriginalFontSizeToViewWidth: Bool {
         get {
             return self.fitOriginalFontSizeToViewWidth
@@ -277,25 +162,6 @@ public class JotTextView: UIView {
                 self.textLabel.numberOfLines = (fitOriginalFontSizeToViewWidth ? 0 : 1)
                 self.sizeLabel()
             }
-        }
-    }
-    */
-    
-    //True model data
-    var fitOriginalFontSizeToViewWidth : Bool = true {
-        
-        //First this
-        willSet {
-            print("Old value is \(fitOriginalFontSizeToViewWidth), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(fitOriginalFontSizeToViewWidth)")
-            self.textLabel.numberOfLines = (fitOriginalFontSizeToViewWidth ? 0 : 1)
-            self.sizeLabel()
         }
     }
 
@@ -414,18 +280,9 @@ public class JotTextView: UIView {
         }
 
     }
-    
-    override init(frame: CGRect) {
-        super.init(frame:frame)
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder);
-    }
-    
 
     convenience init() {
-        self.init(frame: CGRectZero)
+        self.init()
             self.backgroundColor = UIColor.clearColor()
             self.initialTextInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
             self.fontSize = 60.0
@@ -450,7 +307,7 @@ public class JotTextView: UIView {
             self.userInteractionEnabled = false
     }
 
-    override public func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         if CGPointEqualToPoint(self.referenceCenter, CGPointZero) {
             self.textLabel.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds))
@@ -534,7 +391,7 @@ public class JotTextView: UIView {
         UIGraphicsEndImageContext()
         return UIImage(CGImage: drawnImage.CGImage!, scale: 1.0, orientation: drawnImage.imageOrientation)
     }
-    /*
+
     var theScale: CGFloat {
         get {
             return self.theScale
@@ -551,30 +408,6 @@ public class JotTextView: UIView {
                 self.textLabel.center = labelCenter
                 self.textLabel.transform = self.currentRotateTransform
             }
-        }
-    }
-    */
-    //True model data
-    var theScale : CGFloat = 0 {
-        
-        //First this
-        willSet {
-            print("Old value is \(theScale), new value is \(newValue)")
-        }
-        
-        //value is set
-        
-        //Finaly this
-        didSet {
-            print("Old value is \(oldValue), new value is \(theScale)")
-            self.textLabel.transform = CGAffineTransformIdentity
-            let labelCenter: CGPoint = self.textLabel.center
-            let scaledLabelFrame: CGRect = CGRectMake(0.0, 0.0, CGRectGetWidth(theLabelFrame) * theScale * 1.05, CGRectGetHeight(theLabelFrame) * theScale * 1.05)
-            let currentFontSize: CGFloat = self.fontSize * theScale
-            //self.textLabel.font = self.font(size: currentFontSize)
-            self.textLabel.frame = scaledLabelFrame
-            self.textLabel.center = labelCenter
-            self.textLabel.transform = self.currentRotateTransform
         }
     }
 

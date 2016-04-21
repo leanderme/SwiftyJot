@@ -13,7 +13,7 @@ import Foundation
  *  representing single-touch-point events for drawing dots of
  *  a given width and color in the JotDrawView.
  */
-public class JotTouchPoint: NSObject {
+class JotTouchPoint: NSObject {
     /**
      *  The CGPoint where the touch event occurred.
      */
@@ -72,3 +72,10 @@ public class JotTouchPoint: NSObject {
         return self.point
     }
 }
+//
+//  JotTouchPoint.m
+//  jot
+//
+//  Created by Laura Skelton on 4/30/15.
+//
+//
