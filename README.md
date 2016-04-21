@@ -13,15 +13,6 @@ Swift verion of IFFFT's [Jot](https://github.com/IFTTT/jot)
 ### Signatures
 `jot` is a great solution if you need to collect user signatures through a touch interface. Set the `drawingColor` to black, set the state to `JotViewStateDrawing`, and save the signature when the user is done by calling `renderImageOnColor:`.
 
-## Installation
-
-`jot` is available through [CocoaPods](http://cocoapods.org). To install
-it, simply add the following line to your `Podfile`:
-
-```
-pod "jot"
-```
-
 ## Example Project
 
 To run the example project, clone the repo, (1) build the framework and (2) run the demo example.
