@@ -81,7 +81,9 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *  @note The JotViewController's delegate will get updates when it enters and exits
      *  text editing mode, in case you need to update your interface to reflect this.
      */
-     public var state: JotViewState {
+     public var state: JotViewState = JotViewState.Drawing
+    /*
+    {
         get {
             return self.state
         }
@@ -104,6 +106,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             }
         }
     }
+    */
 
     /**
      *  The font of the text displayed in the JotTextView and JotTextEditView.
@@ -111,6 +114,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *  @note To change the default size of the font, you must also set the
      *  fontSize property to the desired font size.
      */
+    /*
     public var font: UIFont {
         get {
             return self.font
@@ -123,6 +127,23 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             }
         }
     }
+    */
+    //True model data
+    public var font: UIFont = UIFont.systemFontOfSize(20){
+        
+        //First this
+        willSet {
+            print("Old value is \(font), new value is \(newValue)")
+        }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(font)")
+            self.textView.font = self.textEditView.font
+        }
+    }
 
     /**
      *  The initial font size of the text displayed in the JotTextView before pinch zooming,
@@ -130,6 +151,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *
      *  @note This property overrides the size of the font property.
      */
+    /*
     public var fontSize: CGFloat {
         get {
             return self.fontSize
@@ -142,10 +164,28 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             }
         }
     }
+    */
+    //True model data
+    public var fontSize : CGFloat = 16 {
+        
+        //First this
+        willSet {
+            print("Old value is \(fontSize), new value is \(newValue)")
+        }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(fontSize)")
+            self.textView.fontSize = self.textEditView.fontSize
+        }
+    }
 
     /**
      *  The color of the text displayed in the JotTextView and the JotTextEditView.
      */
+    /*
     public var textColor: UIColor {
         get {
             return self.textColor
@@ -156,6 +196,24 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
                 self.textView.textColor = self.textEditView.textColor
                 //self.textView.textColor = self.textEditView.textColor = textColor
             }
+        }
+    }
+    */
+    
+    //True model data
+    public var textColor : UIColor = UIColor.blackColor() {
+        
+        //First this
+        willSet {
+            print("Old value is \(textColor), new value is \(newValue)")
+        }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(textColor)")
+            self.textView.textColor = self.textEditView.textColor
         }
     }
 
@@ -402,7 +460,9 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
     public func renderImageWithScale(scale: CGFloat, onColor color: UIColor) -> UIImage {
         return self.renderImageWithSize(CGSizeMake(CGRectGetWidth(self.drawingContainer.frame) * scale, CGRectGetHeight(self.drawingContainer.frame) * scale), onColor: color)
     }
-
+    
+    
+    
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
@@ -410,9 +470,11 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
+
+    
     
     public convenience init() {
-        self.init()
+        self.init(nibName: nil, bundle: nil)
             self.drawView = JotDrawView()
             self.textEditView = JotTextEditView()
             self.textEditView.delegate = self
@@ -428,7 +490,7 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             self.textColor = self.textView.textColor
             self.textEditView.textColor = self.textColor
             self.textString = ""
-            self.drawingColor = self.drawView.strokeColor
+            self.drawingColor = self.drawView.strokeColor!
             self.drawingStrokeWidth = self.drawView.strokeWidth
             self.textEditingInsets = self.textEditView.textEditingInsets
             self.initialTextInsets = self.textView.initialTextInsets

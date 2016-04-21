@@ -17,35 +17,35 @@ public class JotTouchBezier: NSObject {
     /**
      *  The start point of the cubic bezier path.
      */
-    var startPoint: CGPoint!
+    var startPoint: CGPoint?
     /**
      *  The end point of the cubic bezier path.
      */
-    var endPoint: CGPoint!
+    var endPoint: CGPoint?
     /**
      *  The first control point of the cubic bezier path.
      */
-    var controlPoint1: CGPoint!
+    var controlPoint1: CGPoint?
     /**
      *  The second control point of the cubic bezier path.
      */
-    var controlPoint2: CGPoint!
+    var controlPoint2: CGPoint?
     /**
      *  The starting width of the cubic bezier path.
      */
-    var startWidth: CGFloat = 0.0
+    var startWidth: CGFloat?
     /**
      *  The ending width of the cubic bezier path.
      */
-    var endWidth: CGFloat = 0.0
+    var endWidth: CGFloat?
     /**
      *  The stroke color of the cubic bezier path.
      */
-    var strokeColor: UIColor!
+    var strokeColor: UIColor! = UIColor.cyanColor()
     /**
      *  YES if the line is a constant width, NO if variable width.
      */
-    var constantWidth: Bool!
+    var constantWidth: Bool?
     /**
      *  Returns an instance of JotTouchBezier with the given stroke color.
      *
@@ -59,25 +59,26 @@ public class JotTouchBezier: NSObject {
         touchBezier.strokeColor = color
         return touchBezier
     }
+    
     /**
      *  Draws the JotTouchBezier in the current graphics context, using the
      *  strokeColor and transitioning from the start width to the end width
      *  along the length of the curve.
      */
-
     func jotDrawBezier() {
-        if (self.constantWidth != nil) {
+        if (self.constantWidth == true) {
             let bezierPath: UIBezierPath = UIBezierPath()
-            bezierPath.moveToPoint(self.startPoint)
-            bezierPath.addCurveToPoint(self.endPoint, controlPoint1: self.controlPoint1, controlPoint2: self.controlPoint2)
-            bezierPath.lineWidth = self.startWidth
+            print(self.startPoint)
+            bezierPath.moveToPoint(self.startPoint!)
+            bezierPath.addCurveToPoint(self.endPoint!, controlPoint1: self.controlPoint1!, controlPoint2: self.controlPoint2!)
+            bezierPath.lineWidth = self.startWidth!
             bezierPath.lineCapStyle = .Round
             self.strokeColor.setStroke()
             bezierPath.strokeWithBlendMode(.Normal, alpha: 1.0)
         }
         else {
             self.strokeColor.setFill()
-            let widthDelta: CGFloat = self.endWidth - self.startWidth
+            let widthDelta: CGFloat = self.endWidth! - self.startWidth!
             for i in 0..<kJotDrawStepsPerBezier {
                 let cgfloat = CGFloat(i)
                 let t:CGFloat = cgfloat / CGFloat(kJotDrawStepsPerBezier)
@@ -86,15 +87,15 @@ public class JotTouchBezier: NSObject {
                 let u:CGFloat = 1 - t
                 let uu:CGFloat = u * u
                 let uuu:CGFloat = uu * u
-                var x: CGFloat = uuu * self.startPoint.x
-                x += 3 * uu * t * self.controlPoint1.x
-                x += 3 * u * tt * self.controlPoint2.x
-                x += ttt * self.endPoint.x
-                var y: CGFloat = uuu * self.startPoint.y
-                y += 3 * uu * t * self.controlPoint1.y
-                y += 3 * u * tt * self.controlPoint2.y
-                y += ttt * self.endPoint.y
-                let pointWidth: CGFloat = self.startWidth + (ttt * widthDelta)
+                var x: CGFloat = uuu * self.startPoint!.x
+                x += 3 * uu * t * self.controlPoint1!.x
+                x += 3 * u * tt * self.controlPoint2!.x
+                x += ttt * self.endPoint!.x
+                var y: CGFloat = uuu * self.startPoint!.y
+                y += 3 * uu * t * self.controlPoint1!.y
+                y += 3 * u * tt * self.controlPoint2!.y
+                y += ttt * self.endPoint!.y
+                let pointWidth: CGFloat = self.startWidth! + (ttt * widthDelta)
                 self.jotDrawBezierPoint(CGPointMake(x, y), withWidth:pointWidth)
             }
         }
