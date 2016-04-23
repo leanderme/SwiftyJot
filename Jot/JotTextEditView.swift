@@ -11,23 +11,23 @@ import QuartzCore
 import SnapKit
 
 
-protocol JotTextEditViewDelegate: class {
+@objc public protocol JotTextEditViewDelegate: class {
     /**
      *  Called whenever the JotTextEditView ends text editing (keyboard entry) mode.
      *
      *  @param textString    The new text string after editing
      */
-    func jotTextEditViewFinishedEditingWithNewTextString(textString: String)
+    optional func jotTextEditViewFinishedEditingWithNewTextString(textString: String)
 }
 
 /**
  *  Private class to handle text editing. Change the properties
  *  in a JotViewController instance to configure this private class.
  */
-class JotTextEditView: UIView {
+public class JotTextEditView: UIView, JotTextEditViewDelegate {
     
-    var textView: UITextView!
-    var textContainer: UIView!
+    public var textView: UITextView!
+    public var textContainer: UIView!
     var topGradient: CAGradientLayer!
     var bottomGradient: CAGradientLayer!
     
@@ -46,13 +46,10 @@ class JotTextEditView: UIView {
      *  @note Set the JotViewController state to JotViewStateEditingText
      *  to turn on editing mode in JotTextEditView.
      */
-    var isEditing: Bool {
-        get {
-            return self.isEditing
-        }
-        set(isEditing) {
+    var isEditing: Bool = false {
+        willSet {
             if isEditing != isEditing {
-                self.isEditing = isEditing
+                //self.isEditing = isEditing
                 self.textContainer.hidden = !isEditing
                 self.userInteractionEnabled = isEditing
                 if isEditing {
@@ -64,7 +61,7 @@ class JotTextEditView: UIView {
                     self.textString = self.textView.text!
                     self.textView.resignFirstResponder()
                     //if self.delegate.respondsToSelector("jotTextEditViewFinishedEditingWithNewTextString:") {
-                        self.delegate!.jotTextEditViewFinishedEditingWithNewTextString(textString)
+                        self.delegate!.jotTextEditViewFinishedEditingWithNewTextString!(textString)
                     //}
                 }
             }
@@ -77,25 +74,29 @@ class JotTextEditView: UIView {
      *  @note Set textString in JotViewController
      *  to control or read this property.
      */
-    var textString: String {
-        get {
-            return self.textString
+    public var textString : String = " " {
+        
+        //First this
+        willSet {
+            print("Old value is \(textString), new value is \(newValue)")
         }
-        set(textString) {
-            if !(textString == textString) {
-                self.textString = textString
-                self.textView.text = textString
-                self.textView.setContentOffset(CGPointZero, animated: false)
-            }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(textString)")
+            textView.text = textString
+            textView.setContentOffset(CGPointZero, animated: false)
         }
     }
-
     /**
      *  The color of the text displayed in the JotTextEditView.
      *
      *  @note Set textColor in JotViewController
      *  to control this property.
      */
+    /*
     var textColor: UIColor {
         get {
             return self.textColor
@@ -107,6 +108,24 @@ class JotTextEditView: UIView {
             }
         }
     }
+    */
+    
+    //True model data
+    var textColor : UIColor = UIColor.blackColor() {
+        
+        //First this
+        willSet {
+            print("Old value is \(textColor), new value is \(newValue)")
+        }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(textColor)")
+            self.textView.textColor = textColor
+        }
+    }
 
     /**
      *  The font of the text displayed in the JotTextEditView.
@@ -115,6 +134,7 @@ class JotTextEditView: UIView {
      *  To change the default size of the font, you must also set the
      *  fontSize property to the desired font size.
      */
+    /*
     var font: UIFont {
         get {
             return self.font
@@ -126,6 +146,22 @@ class JotTextEditView: UIView {
             }
         }
     }
+    */
+    //True model data
+    var font : UIFont = UIFont.systemFontOfSize(20) {
+        
+        //First this
+        willSet {
+            print("Old value is \(font), new value is \(newValue)")
+        }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(font)")
+        }
+    }
 
     /**
      *  The font size of the text displayed in the JotTextEditView.
@@ -133,6 +169,7 @@ class JotTextEditView: UIView {
      *  @note Set fontSize in JotViewController to control this property,
      *  which overrides the size of the font property.
      */
+    /*
     var fontSize: CGFloat {
         get {
             return self.fontSize
@@ -144,21 +181,31 @@ class JotTextEditView: UIView {
             }
         }
     }
+    */
+    //True model data
+    var fontSize : CGFloat = 0 {
+        
+        //First this
+        willSet {
+            print("Old value is \(fontSize), new value is \(newValue)")
+        }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(fontSize)")
+        }
+    }
 
     /**
      *  The alignment of the text displayed in the JotTextEditView.
      *
      *  @note Set textAlignment in JotViewController to control this property.
      */
-    var textAlignment: NSTextAlignment {
-        get {
-            return self.textAlignment
-        }
-        set(textAlignment) {
-            if textAlignment != textAlignment {
-                self.textAlignment = textAlignment
-                self.textView.textAlignment = textAlignment
-            }
+    var textAlignment: NSTextAlignment = NSTextAlignment.Center {
+        willSet {
+            self.textView.textAlignment = textAlignment
         }
     }
 
@@ -170,6 +217,7 @@ class JotTextEditView: UIView {
      *
      *  @note Set textEditingInsets in JotViewController to control this property.
      */
+    /*
     var textEditingInsets: UIEdgeInsets {
         get {
             return self.textEditingInsets
@@ -184,6 +232,27 @@ class JotTextEditView: UIView {
                 self.textView.setContentOffset(CGPointZero, animated: false)
             }
         }
+    } */
+    
+    //True model data
+    var textEditingInsets : UIEdgeInsets = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0) {
+        
+        //First this
+        willSet {
+            print("Old value is \(textEditingInsets), new value is \(newValue)")
+        }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(textEditingInsets)")
+            self.textView.snp_makeConstraints { (make) -> Void in
+                make.edges.equalTo(self.textContainer).inset(textEditingInsets)
+            }
+            self.textView.layoutIfNeeded()
+            self.textView.setContentOffset(CGPointZero, animated: false)
+        }
     }
 
     /**
@@ -194,6 +263,7 @@ class JotTextEditView: UIView {
      *
      *  @note Set clipBoundsToEditingInsets in JotViewController to control this property.
      */
+    /*
     var clipBoundsToEditingInsets: Bool {
         get {
             return self.clipBoundsToEditingInsets
@@ -205,10 +275,36 @@ class JotTextEditView: UIView {
                 self.setupGradientMask()
             }
         }
+    } */
+    
+    //True model data
+    var clipBoundsToEditingInsets : Bool = true {
+        
+        //First this
+        willSet {
+            print("Old value is \(clipBoundsToEditingInsets), new value is \(newValue)")
+        }
+        
+        //value is set
+        
+        //Finaly this
+        didSet {
+            print("Old value is \(oldValue), new value is \(clipBoundsToEditingInsets)")
+            self.textView.clipsToBounds = clipBoundsToEditingInsets
+            self.setupGradientMask()
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame:frame)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder);
     }
 
     convenience init() {
-        self.init()
+        self.init(frame: CGRectZero)
             self.backgroundColor = UIColor.clearColor()
             self.font = UIFont.systemFontOfSize(40.0)
             self.fontSize = 40.0
@@ -270,7 +366,7 @@ class JotTextEditView: UIView {
         NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 
-    override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         self.setupGradientMask()
     }

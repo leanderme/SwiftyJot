@@ -25,7 +25,8 @@ extension UIImage {
         UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.mainScreen().scale)
         color.setFill()
         CGContextFillRect(UIGraphicsGetCurrentContext(), CGRectMake(0.0, 0.0, size.width, size.height))
-        var colorImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()
+        var colorImage: UIImage = UIImage()
+        //colorImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return colorImage
     }
