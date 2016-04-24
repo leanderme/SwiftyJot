@@ -20,26 +20,33 @@ let kJotRelativeMinStrokeWidth: CGFloat = 0.4
 public class JotDrawView: UIView {
     
     var cachedImage: UIImage?
-    var pathsArray: [AnyObject]?
+    var pathsArray: NSMutableArray?
     var pointsArray: NSMutableArray?
     var pointsCounter: Int?
     var lastVelocity: CGFloat?
     var lastWidth: CGFloat?
     var initialVelocity: CGFloat?
     
-    public var bezierPath: JotTouchBezier = JotTouchBezier() {
+    var bezierPath:JotTouchBezier! = JotTouchBezier()
+    
+    /*
+    public var bezierPath: JotTouchBezier! {
         //First this
         willSet {
-            print("Old value is \(bezierPath), new value is \(newValue)")
+            if bezierPath != newValue {
+                self.bezierPath = newValue
+            }
+            print("Old berzierpath value is \(bezierPath), new value is \(newValue)")
         }
         
         didSet {
-            //print("bezierPath Old value is \(bezierPath), new value is \(newValue)")
+            print("bezierPath Old value is \(bezierPath), old value is \(oldValue)")
             self.bezierPath.strokeColor = self.strokeColor!
-            self.pathsArray!.append(self.bezierPath)
+            self.pathsArray!.addObject(self.bezierPath)
             self.bezierPath.constantWidth = self.constantStrokeWidth
         }
     }
+    */
     
     /**
      *  Set to YES if you want the stroke width to be constant,
@@ -89,20 +96,6 @@ public class JotDrawView: UIView {
             print("strokeColor Old value is \(oldValue), new value is \(strokeColor)")
         }
     }
-
-    func setupBezierPath(color:UIColor) -> JotTouchBezier {
-        self.bezierPath = JotTouchBezier()
-        self.bezierPath.strokeColor = self.strokeColor!
-        self.pathsArray!.append(self.bezierPath)
-        self.bezierPath.constantWidth = self.constantStrokeWidth
-        return self.bezierPath
-    }
-    
-    func getBezierPath() -> JotTouchBezier {
-        self.bezierPath = JotTouchBezier()
-        bezierPath.strokeColor = self.strokeColor!
-        return self.bezierPath
-    }
     
     /**
      *  Clears all paths from the drawing, giving a blank slate.
@@ -113,7 +106,7 @@ public class JotDrawView: UIView {
 
     func clearDrawing() {
         self.cachedImage = nil
-        self.pathsArray!.removeAll()
+        self.pathsArray!.removeAllObjects()
         //self.setupBezierPath(self.strokeColor!)
         //self.bezierPath = JotTouchBezier()
         self.pointsCounter = 0
@@ -160,26 +153,27 @@ public class JotDrawView: UIView {
         if self.pointsCounter == 4 {
             self.pointsArray![3] = JotTouchPoint.withPoint(CGPointMake((self.pointsArray![2].CGPointValue.x + self.pointsArray![4].CGPointValue.x) / 2.0, (self.pointsArray![2].CGPointValue.y + self.pointsArray![4].CGPointValue.y) / 2.0))
             
-            print("attempting to set \(self.bezierPath.startPoint)")
-            self.bezierPath.startPoint = self.pointsArray![0].CGPointValue
-            self.bezierPath.endPoint = self.pointsArray![3].CGPointValue
-            self.bezierPath.controlPoint1 = self.pointsArray![1].CGPointValue
-            self.bezierPath.controlPoint2 = self.pointsArray![2].CGPointValue
+            print("attempting to set \(self.bezierPathInstance().startPoint)")
+            self.bezierPathInstance().startPoint = self.pointsArray![0].CGPointValue
+            self.bezierPathInstance().endPoint = self.pointsArray![3].CGPointValue
+            self.bezierPathInstance().controlPoint1 = self.pointsArray![1].CGPointValue
+            self.bezierPathInstance().controlPoint2 = self.pointsArray![2].CGPointValue
 
             print("is constantStrokeWidth \(self.constantStrokeWidth)") // crashes when true -> out of range
             
             if self.constantStrokeWidth {
-                self.bezierPath.startWidth = self.strokeWidth
-                self.bezierPath.endWidth = self.strokeWidth
+                self.bezierPathInstance().startWidth = self.strokeWidth
+                self.bezierPathInstance().endWidth = self.strokeWidth
             } else {
                 var velocity: CGFloat = (self.pointsArray![3] as! JotTouchPoint).velocityFromPoint((self.pointsArray![0] as! JotTouchPoint))
                 velocity = (kJotVelocityFilterWeight * velocity) + ((1.0 - kJotVelocityFilterWeight) * self.lastVelocity!)
                 let strokeWidth: CGFloat = self.strokeWidthForVelocity(velocity)
-                self.bezierPath.startWidth = self.lastWidth!
-                self.bezierPath.endWidth = strokeWidth
+                self.bezierPathInstance().startWidth = self.lastWidth!
+                self.bezierPathInstance().endWidth = strokeWidth
                 self.lastWidth = strokeWidth
                 self.lastVelocity = velocity
             }
+            
             /*
             print(self.pathsArray![0])
             print(self.pathsArray![1])
@@ -221,6 +215,8 @@ public class JotDrawView: UIView {
      *  to trigger this method.
      */
     func drawOnImage(image: UIImage) -> UIImage {
+        print("drawonimage")
+        print(image.size)
         return self.drawAllPathsImageWithSize(image.size, backgroundImage: image)
     }
     
@@ -239,27 +235,22 @@ public class JotDrawView: UIView {
         return self.drawAllPathsImageWithSize(size, backgroundImage: nil)
     }
 
-    override init(frame: CGRect) {
-        super.init(frame:frame)
-    }
-    
     required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder);
+        super.init(coder: aDecoder)
     }
     
-    convenience init() {
-        self.init(frame: CGRectZero)
+    override init(frame:CGRect) {
+        super.init(frame: frame)
             self.backgroundColor = UIColor.clearColor()
             self.strokeWidth = 10.0
             self.strokeColor = UIColor.blackColor()
-            self.pathsArray = NSMutableArray() as [AnyObject]
+            self.pathsArray = NSMutableArray()
             self.constantStrokeWidth = false
             self.pointsArray = NSMutableArray()
             self.initialVelocity = kJotInitialVelocity
             self.lastVelocity = initialVelocity
             self.lastWidth = strokeWidth
             self.userInteractionEnabled = false
-            //self.bezierPath = JotTouchBezier()
             //self.setupBezierPath(self.strokeColor!)
     }
 
@@ -269,7 +260,7 @@ public class JotDrawView: UIView {
         if image != nil {
             self.cachedImage!.drawAtPoint(CGPointZero)
         }
-        self.bezierPath.jotDrawBezier()
+        self.bezierPathInstance().jotDrawBezier()
         //self.setupBezierPath(self.strokeColor!)
         //self.bezierPath = JotTouchBezier()
         print("pointsArray \(self.pointsArray?.count)")
@@ -278,9 +269,9 @@ public class JotDrawView: UIView {
             let touchPoint: JotTouchPoint = self.pointsArray!.firstObject as! JotTouchPoint
             touchPoint.strokeColor = self.strokeColor
             touchPoint.strokeWidth = 1.5 * self.strokeWidthForVelocity(1.0)
-            self.pathsArray!.append(touchPoint)
+            self.pathsArray!.addObject(touchPoint)
             touchPoint.strokeColor.setFill()
-            self.bezierPath.jotDrawBezierPoint(touchPoint.CGPointValue(), withWidth: touchPoint.strokeWidth)
+            self.bezierPathInstance().jotDrawBezierPoint(touchPoint.CGPointValue(), withWidth: touchPoint.strokeWidth)
         }
         self.cachedImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
@@ -289,11 +280,11 @@ public class JotDrawView: UIView {
 
     override public func drawRect(rect: CGRect) {
         let image:UIImage? = self.cachedImage
-        let path: JotTouchBezier? = self.bezierPath
+        let path: JotTouchBezier? = self.bezierPathInstance()
         if image != nil && path != nil {
             //self.bezierPath! = JotTouchBezier()
             self.cachedImage!.drawInRect(rect)
-            self.bezierPath.jotDrawBezier()
+            self.bezierPathInstance().jotDrawBezier()
         }
     }
 
@@ -303,21 +294,24 @@ public class JotDrawView: UIView {
 
     }
 
-    /*
-    func bezierPath() -> JotTouchBezier {
-        if !bezierPath {
-            self.bezierPath = JotTouchBezier.withColor(self.strokeColor)
-            self.pathsArray.append(bezierPath)
+    func bezierPathInstance() -> JotTouchBezier {
+        if (self.bezierPath == nil) {
+            print("bezierPath is nil")
+            self.bezierPath = JotTouchBezier.withColor(self.strokeColor!)
+            self.pathsArray?.addObject(bezierPath)
             self.bezierPath.constantWidth = self.constantStrokeWidth
         }
         return bezierPath
     }
-    */
 
     func drawAllPathsImageWithSize(size: CGSize, backgroundImage: UIImage?) -> UIImage {
         let scale: CGFloat = size.width / CGRectGetWidth(self.bounds)
+        print("drawAllPathsImageWithSize")
+        print(scale)
+        
         UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, scale)
         if let image = backgroundImage {
+            print("isbackgroundimage")
             image.drawInRect(CGRectMake(0.0, 0.0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds)))
         }
         self.drawAllPaths()
@@ -326,17 +320,25 @@ public class JotDrawView: UIView {
         if let theDrawnImage = drawnImage {
           return UIImage(CGImage:theDrawnImage.CGImage!, scale: 1.0, orientation:theDrawnImage.imageOrientation)
         } else {
+            print("failing. no theDrawnImage")
             return UIImage()
         }
     }
 
     func drawAllPaths() {
+        print("pathsArray is")
+        print(self.pathsArray!)
         for path in self.pathsArray! {
-            if path.isKindOfClass(JotTouchBezier) {
-                (path as! JotTouchBezier).jotDrawBezier()
-            } else if path.isKindOfClass(JotTouchPoint) {
-                (path as! JotTouchPoint).strokeColor.setFill()
-                self.bezierPath.jotDrawBezierPoint((path as! JotTouchPoint).CGPointValue(), withWidth: (path as! JotTouchPoint).strokeWidth)
+            print(path)
+            if path is JotTouchBezier {
+                let bezierPath = path as! JotTouchBezier
+                bezierPath.jotDrawBezier()
+                print("jotDrawbezier called by drawAllPath")
+            } else if path is JotTouchPoint {
+                let pointPath = path as! JotTouchPoint
+                pointPath.strokeColor.setFill()
+                self.bezierPathInstance().jotDrawBezierPoint(pointPath.CGPointValue(), withWidth: pointPath.strokeWidth!)
+                print("jotDrawBezierPoint called by drawAllPaths")
             }
         }
     }

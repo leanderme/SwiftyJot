@@ -1,12 +1,6 @@
-//
-//  JotTextView.h
-//  jot
-//
-//  Created by Laura Skelton on 4/30/15.
-//
-//
 import UIKit
 import Foundation
+
 /**
  *  Private class to handle text display and gesture interactions.
  *  Change the properties in a JotViewController instance to 
@@ -29,18 +23,17 @@ class JotTextView: UIView {
      *  @note Set textString in JotViewController
      *  to control or read this property.
      */
-    var textString: String {
-        get {
-            return self.textString
-        }
-        set(textString) {
-            if !(textString == textString) {
-                self.textString = textString
-                let center: CGPoint = self.textLabel.center
-                self.textLabel.text = textString
-                self.sizeLabel()
-                self.textLabel.center = center
+    var textString : String = " " {
+        willSet {
+            if !(textString == newValue) {
+                self.textString = newValue
             }
+        }
+        didSet {
+            let center: CGPoint = self.textLabel.center
+            self.textLabel.text = textString
+            self.sizeLabel()
+            self.textLabel.center = center
         }
     }
 
@@ -50,15 +43,14 @@ class JotTextView: UIView {
      *  @note Set textColor in JotViewController
      *  to control this property.
      */
-    var textColor: UIColor {
-        get {
-            return self.textColor
-        }
-        set(textColor) {
-            if textColor != textColor {
-                self.textColor = textColor
-                self.textLabel.textColor = textColor
+    var textColor : UIColor = UIColor.blueColor() {
+        willSet {
+            if textColor != newValue {
+                self.textColor = newValue
             }
+        }
+        didSet {
+            self.textLabel.textColor = textColor
         }
     }
 
@@ -69,15 +61,17 @@ class JotTextView: UIView {
      *  To change the default size of the font, you must also set the
      *  fontSize property to the desired font size.
      */
-    var font: UIFont {
-        get {
-            return self.font
-        }
-        set(font) {
-            if font != font {
-                self.font = font
-                self.adjustLabelFont()
+    //True model data
+    var font : UIFont = UIFont() {
+        
+        //First this
+        willSet {
+            if font != newValue {
+                self.font = newValue
             }
+        }
+        didSet {
+            self.adjustLabelFont()
         }
     }
 
@@ -89,15 +83,15 @@ class JotTextView: UIView {
      *  @note Set fontSize in JotViewController to control this property,
      *  which overrides the size of the font property.
      */
-    var fontSize: CGFloat {
-        get {
-            return self.fontSize
-        }
-        set(fontSize) {
-            if fontSize != fontSize {
-                self.fontSize = fontSize
-                self.adjustLabelFont()
+    //True model data
+    var fontSize : CGFloat = 0 {
+        willSet {
+            if fontSize != newValue {
+                self.fontSize = newValue
             }
+        }
+        didSet {
+            self.adjustLabelFont()
         }
     }
 
@@ -108,6 +102,7 @@ class JotTextView: UIView {
      *  @note Set textAlignment in JotViewController to control this property,
      *  which will be ignored if fitOriginalFontSizeToViewWidth is false.
      */
+    /*
     var textAlignment: NSTextAlignment {
         get {
             return self.textAlignment
@@ -120,6 +115,20 @@ class JotTextView: UIView {
             }
         }
     }
+    */
+    //True model data
+    var textAlignment : NSTextAlignment = NSTextAlignment.Center {
+        willSet {
+            if textAlignment != newValue {
+                self.textAlignment = newValue
+            }
+        }
+        didSet {
+            self.textLabel.textAlignment = self.textAlignment
+            self.sizeLabel()
+        }
+    }
+    
 
     /**
      *  The initial insets of the text displayed in the JotTextView, which only
@@ -131,15 +140,14 @@ class JotTextView: UIView {
      *  @note Set initialTextInsets in JotViewController to control this property,
      *  which will be ignored if fitOriginalFontSizeToViewWidth is false.
      */
-    var initialTextInsets: UIEdgeInsets {
-        get {
-            return self.initialTextInsets
-        }
-        set(initialTextInsets) {
-            if !UIEdgeInsetsEqualToEdgeInsets(initialTextInsets, initialTextInsets) {
-                self.initialTextInsets = initialTextInsets
-                self.sizeLabel()
+    var initialTextInsets : UIEdgeInsets = UIEdgeInsets.init(top: 0, left: 0, bottom: 0, right: 0) {
+        willSet {
+            if !UIEdgeInsetsEqualToEdgeInsets(initialTextInsets, newValue) {
+                self.initialTextInsets = newValue
             }
+        }
+        didSet {
+            self.sizeLabel()
         }
     }
 
@@ -152,16 +160,16 @@ class JotTextView: UIView {
      *
      *  @note Set fitOriginalFontSizeToViewWidth in JotViewController to control this property.
      */
-    var fitOriginalFontSizeToViewWidth: Bool {
-        get {
-            return self.fitOriginalFontSizeToViewWidth
-        }
-        set(fitOriginalFontSizeToViewWidth) {
-            if fitOriginalFontSizeToViewWidth != fitOriginalFontSizeToViewWidth {
-                self.fitOriginalFontSizeToViewWidth = fitOriginalFontSizeToViewWidth
-                self.textLabel.numberOfLines = (fitOriginalFontSizeToViewWidth ? 0 : 1)
-                self.sizeLabel()
+    //True model data
+    var fitOriginalFontSizeToViewWidth : Bool = true {
+        willSet {
+            if fitOriginalFontSizeToViewWidth != newValue {
+                self.fitOriginalFontSizeToViewWidth = newValue
             }
+        }
+        didSet {
+            self.textLabel.numberOfLines = (fitOriginalFontSizeToViewWidth ? 0 : 1)
+            self.sizeLabel()
         }
     }
 
@@ -171,41 +179,13 @@ class JotTextView: UIView {
      *  @note Call clearText or clearAll in JotViewController
      *  to trigger this method.
      */
-
     func clearText() {
         self.theScale = 1.0
         self.textLabel.transform = CGAffineTransformIdentity
         self.textString = ""
     }
-    /**
-     *  Overlays the text on the given background image.
-     *
-     *  @param image The background image to render text on top of.
-     *
-     *  @return An image of the rendered drawing on the background image.
-     *
-     *  @note Call drawOnImage: in JotViewController
-     *  to trigger this method.
-     */
-
-    func drawTextOnImage(image: UIImage) -> UIImage {
-        return self.drawTextImageWithSize(image.size, backgroundImage: image)
-    }
-    /**
-     *  Renders the text overlay at full resolution for the given size.
-     *
-     *  @param size The size of the image to return.
-     *
-     *  @return An image of the rendered text.
-     *
-     *  @note Call renderWithSize: in JotViewController
-     *  to trigger this method.
-     */
-
-    func renderDrawTextViewWithSize(size: CGSize) -> UIImage {
-        //nil
-        return self.drawTextImageWithSize(size, backgroundImage: UIImage())
-    }
+    
+    
     /**
      *  Tells the JotTextView to handle a pan gesture.
      *
@@ -214,7 +194,6 @@ class JotTextView: UIView {
      *  @note This method is triggered by the JotDrawController's
      *  internal pan gesture recognizer.
      */
-
     func handlePanGesture(recognizer: UIGestureRecognizer) {
         if !(recognizer is UIPanGestureRecognizer) {
             return
@@ -234,6 +213,7 @@ class JotTextView: UIView {
         }
 
     }
+    
     /**
      *  Tells the JotTextView to handle a pinch or rotate gesture.
      *
@@ -242,7 +222,6 @@ class JotTextView: UIView {
      *  @note This method is triggered by the JotDrawController's
      *  internal pinch and rotation gesture recognizers.
      */
-
     func handlePinchOrRotateGesture(recognizer: UIGestureRecognizer) {
         switch recognizer.state {
             case .Began:
@@ -281,8 +260,18 @@ class JotTextView: UIView {
 
     }
 
-    convenience init() {
-        self.init()
+    /*
+    override init(frame: CGRect) {
+        super.init(frame:frame)
+    }
+    */
+    
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder);
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
             self.backgroundColor = UIColor.clearColor()
             self.initialTextInsets = UIEdgeInsetsMake(0.0, 0.0, 0.0, 0.0)
             self.fontSize = 60.0
@@ -290,7 +279,7 @@ class JotTextView: UIView {
             self.font = UIFont.systemFontOfSize(self.fontSize)
             self.textAlignment = .Center
             self.textColor = UIColor.whiteColor()
-            self.textString = ""
+            self.textString = "test"
             self.textLabel = UILabel()
             if self.fitOriginalFontSizeToViewWidth {
                 self.textLabel.numberOfLines = 0
@@ -306,8 +295,9 @@ class JotTextView: UIView {
             self.currentRotateTransform = CGAffineTransformIdentity
             self.userInteractionEnabled = false
     }
-
-    override func layoutSubviews() {
+    
+ 
+    override public func layoutSubviews() {
         super.layoutSubviews()
         if CGPointEqualToPoint(self.referenceCenter, CGPointZero) {
             self.textLabel.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds))
@@ -321,7 +311,7 @@ class JotTextView: UIView {
             let labelCenter: CGPoint = self.textLabel.center
             let scaledLabelFrame: CGRect = CGRectMake(0.0, 0.0, CGRectGetWidth(theLabelFrame) * scale * 1.05, CGRectGetHeight(theLabelFrame) * scale * 1.05)
             let currentFontSize: CGFloat = self.fontSize * scale
-            //self.textLabel.font = self.font(size: currentFontSize)
+            self.textLabel.font = UIFont.systemFontOfSize(currentFontSize)
             self.textLabel.frame = scaledLabelFrame
             self.textLabel.center = labelCenter
             self.textLabel.transform = self.currentRotateTransform
@@ -344,7 +334,7 @@ class JotTextView: UIView {
     func adjustLabelFont() {
         var currentFontSize: CGFloat = fontSize * theScale
         var center: CGPoint = self.textLabel.center
-        //self.textLabel.font = font(size: currentFontSize)
+        self.textLabel.font = UIFont.systemFontOfSize(currentFontSize)
         self.sizeLabel()
         self.textLabel.center = center
     }
@@ -352,7 +342,7 @@ class JotTextView: UIView {
     func sizeLabel() {
         let temporarySizingLabel: UILabel = UILabel()
         temporarySizingLabel.text = textString
-        //temporarySizingLabel.font = font(size: fontSize)
+        temporarySizingLabel.font = UIFont.systemFontOfSize(fontSize)
         temporarySizingLabel.textAlignment = textAlignment
             var insetViewRect: CGRect
         if fitOriginalFontSizeToViewWidth {
@@ -381,51 +371,88 @@ class JotTextView: UIView {
         let scale: CGFloat = (recognizer as! UIPinchGestureRecognizer).scale
         return CGAffineTransformScale(transform, scale, scale)
     }
-
-    func drawTextImageWithSize(size: CGSize, backgroundImage: UIImage) -> UIImage {
+    
+    //#pragma mark - Image Rendering
+    
+    /**
+     *  Overlays the text on the given background image.
+     *
+     *  @param image The background image to render text on top of.
+     *
+     *  @return An image of the rendered drawing on the background image.
+     *
+     *  @note Call drawOnImage: in JotViewController
+     *  to trigger this method.
+     */
+    func drawTextOnImage(image: UIImage) -> UIImage {
+        print("image size is \(image.size)")
+        return self.drawTextImageWithSize(image.size, backgroundImage: image)
+    }
+    
+    /**
+     *  Renders the text overlay at full resolution for the given size.
+     *
+     *  @param size The size of the image to return.
+     *
+     *  @return An image of the rendered text.
+     *
+     *  @note Call renderWithSize: in JotViewController
+     *  to trigger this method.
+     */
+    func renderDrawTextViewWithSize(size: CGSize) -> UIImage {
+        print("renderDrawTextViewWithSize: \(size)")
+        return self.drawTextImageWithSize(size, backgroundImage: nil)
+    }
+    
+    //http://stackoverflow.com/questions/12424690/uigraphicsgetcurrentcontext-seems-to-return-nil
+    //init with GCSizeZero might be an issue
+    func drawTextImageWithSize(size: CGSize, backgroundImage: UIImage?) -> UIImage {
         let scale: CGFloat = size.width / CGRectGetWidth(self.bounds)
+        print("drawTextImageWithSize: \(size)")
         UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, scale)
-        backgroundImage.drawInRect(CGRectMake(0.0, 0.0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds)))
+        backgroundImage!.drawInRect(CGRectMake(0.0, 0.0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds)))
         self.layer.renderInContext(UIGraphicsGetCurrentContext()!)
         let drawnImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return UIImage(CGImage: drawnImage.CGImage!, scale: 1.0, orientation: drawnImage.imageOrientation)
     }
-
-    var theScale: CGFloat {
-        get {
-            return self.theScale
-        }
-        set(theScale) {
-            if theScale != theScale {
-                self.theScale = theScale
-                self.textLabel.transform = CGAffineTransformIdentity
-                let labelCenter: CGPoint = self.textLabel.center
-                let scaledLabelFrame: CGRect = CGRectMake(0.0, 0.0, CGRectGetWidth(theLabelFrame) * theScale * 1.05, CGRectGetHeight(theLabelFrame) * theScale * 1.05)
-                let currentFontSize: CGFloat = self.fontSize * theScale
-                //self.textLabel.font = self.font(size: currentFontSize)
-                self.textLabel.frame = scaledLabelFrame
-                self.textLabel.center = labelCenter
-                self.textLabel.transform = self.currentRotateTransform
+    
+    //True model data
+    var theScale : CGFloat = 0 {
+        
+        //First this
+        willSet {
+            if theScale != newValue {
+                self.theScale = newValue
             }
+        }
+        didSet {
+            self.textLabel.transform = CGAffineTransformIdentity
+            let labelCenter: CGPoint = self.textLabel.center
+            let scaledLabelFrame: CGRect = CGRectMake(0.0, 0.0, CGRectGetWidth(theLabelFrame) * theScale * 1.05, CGRectGetHeight(theLabelFrame) * theScale * 1.05)
+            let currentFontSize: CGFloat = self.fontSize * theScale
+            self.textLabel.font = UIFont.systemFontOfSize(currentFontSize)
+            self.textLabel.frame = scaledLabelFrame
+            self.textLabel.center = labelCenter
+            self.textLabel.transform = self.currentRotateTransform
         }
     }
 
-    var theLabelFrame: CGRect {
-        get {
-            return self.theLabelFrame
-        }
-        set(theLabelFrame) {
-            if !CGRectEqualToRect(theLabelFrame, theLabelFrame) {
-                self.theLabelFrame = theLabelFrame
-                let labelCenter: CGPoint = self.textLabel.center
-                let scaledLabelFrame: CGRect = CGRectMake(0.0, 0.0, CGRectGetWidth(theLabelFrame) * theScale * 1.05, CGRectGetHeight(theLabelFrame) * theScale * 1.05)
-                let labelTransform: CGAffineTransform = self.textLabel.transform
-                self.textLabel.transform = CGAffineTransformIdentity
-                self.textLabel.frame = scaledLabelFrame
-                self.textLabel.transform = labelTransform
-                self.textLabel.center = labelCenter
+    // true data model
+    var theLabelFrame: CGRect = CGRectMake(0.0, 0.0, 0.0, 0.0) {
+        willSet {
+            if !CGRectEqualToRect(theLabelFrame, newValue) {
+                self.theLabelFrame = newValue
             }
+        }
+        didSet {
+            let labelCenter: CGPoint = self.textLabel.center
+            let scaledLabelFrame: CGRect = CGRectMake(0.0, 0.0, CGRectGetWidth(theLabelFrame) * theScale * 1.05, CGRectGetHeight(theLabelFrame) * theScale * 1.05)
+            let labelTransform: CGAffineTransform = self.textLabel.transform
+            self.textLabel.transform = CGAffineTransformIdentity
+            self.textLabel.frame = scaledLabelFrame
+            self.textLabel.transform = labelTransform
+            self.textLabel.center = labelCenter
         }
     }
 }

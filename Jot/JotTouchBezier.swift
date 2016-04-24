@@ -18,56 +18,34 @@ public class JotTouchBezier: NSObject {
     /**
      *  The start point of the cubic bezier path.
      */
-    var startPoint: CGPoint! {
-        didSet {
-            print("startPoint Old value is \(oldValue), new value is \(startPoint)")
-        }
-    }
+    var startPoint: CGPoint!
     
     /**
      *  The end point of the cubic bezier path.
      */
-    var endPoint: CGPoint! {
-        didSet {
-            print("endPoint Old value is \(oldValue), new value is \(endPoint)")
-        }
-    }
+    var endPoint: CGPoint!
     
     /**
      *  The first control point of the cubic bezier path.
      */
-    var controlPoint1: CGPoint! {
-        didSet {
-            print("controlPoint1 Old value is \(oldValue), new value is \(controlPoint1)")
-        }
-    }
+    var controlPoint1: CGPoint!
     
     /**
      *  The second control point of the cubic bezier path.
      */
-    var controlPoint2: CGPoint! {
-        didSet {
-            print("controlPoint2 Old value is \(oldValue), new value is \(controlPoint2)")
-        }
-    }
+    
+    var controlPoint2: CGPoint!
     
     /**
      *  The starting width of the cubic bezier path.
      */
-    var startWidth: CGFloat! {
-        didSet {
-            print("startWidth Old value is \(oldValue), new value is \(startWidth)")
-        }
-    }
+    var startWidth: CGFloat!
     
     /**
      *  The ending width of the cubic bezier path.
      */
-    var endWidth: CGFloat! {
-        didSet {
-            print("endWidth Old value is \(oldValue), new value is \(endWidth)")
-        }
-    }
+    
+    var endWidth: CGFloat!
     
     /**
      *  The stroke color of the cubic bezier path.
@@ -103,7 +81,7 @@ public class JotTouchBezier: NSObject {
      */
     func jotDrawBezier() {
         if (self.constantWidth == true) {
-            print("constantWidth")
+            print("jotDrawBezier called, is constantWidth")
             let bezierPath: UIBezierPath = UIBezierPath()
             print("startPoint is \(self.startPoint)")
             bezierPath.moveToPoint(self.startPoint!)
@@ -114,24 +92,30 @@ public class JotTouchBezier: NSObject {
             bezierPath.strokeWithBlendMode(.Normal, alpha: 1.0)
         }
         else {
+            print("jotdrawbezier called, is not constantWidth")
             self.strokeColor.setFill()
             let widthDelta: CGFloat = self.endWidth! - self.startWidth!
             for i in 0..<kJotDrawStepsPerBezier {
+                
                 let cgfloat = CGFloat(i)
                 let t:CGFloat = cgfloat / CGFloat(kJotDrawStepsPerBezier)
                 let tt:CGFloat = t * t
                 let ttt:CGFloat = tt * t
+                
                 let u:CGFloat = 1 - t
                 let uu:CGFloat = u * u
                 let uuu:CGFloat = uu * u
+                
                 var x: CGFloat = uuu * self.startPoint!.x
                 x += 3 * uu * t * self.controlPoint1!.x
                 x += 3 * u * tt * self.controlPoint2!.x
                 x += ttt * self.endPoint!.x
+                
                 var y: CGFloat = uuu * self.startPoint!.y
                 y += 3 * uu * t * self.controlPoint1!.y
                 y += 3 * u * tt * self.controlPoint2!.y
                 y += ttt * self.endPoint!.y
+                
                 let pointWidth: CGFloat = self.startWidth! + (ttt * widthDelta)
                 self.jotDrawBezierPoint(CGPointMake(x, y), withWidth:pointWidth)
             }

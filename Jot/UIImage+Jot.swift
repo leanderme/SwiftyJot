@@ -13,6 +13,7 @@ import Foundation
  *  instead of image annotation-style.
  */
 extension UIImage {
+    
     /**
      *  Creates a single-color image with the given color and size.
      *
@@ -26,15 +27,8 @@ extension UIImage {
         color.setFill()
         CGContextFillRect(UIGraphicsGetCurrentContext(), CGRectMake(0.0, 0.0, size.width, size.height))
         var colorImage: UIImage = UIImage()
-        //colorImage = UIGraphicsGetImageFromCurrentImageContext()
+        colorImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return colorImage
     }
 }
-//
-//  UIImage+Jot.m
-//  Jot
-//
-//  Created by Laura Skelton on 4/30/15.
-//
-//

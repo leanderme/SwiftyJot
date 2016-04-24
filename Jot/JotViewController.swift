@@ -8,6 +8,7 @@
 import UIKit
 import Foundation
 import SnapKit
+
 /**
  *  The possible states of the JotViewController
  */
@@ -34,7 +35,6 @@ public enum JotViewState : Int    /**
          */
     case EditingText
 }
-
 
 public protocol JotViewControllerDelegate: class {
     /**
@@ -69,7 +69,9 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
     public var panRecognizer: UIPanGestureRecognizer?
     public var drawView: JotDrawView!
     public var textEditView: JotTextEditView!
-    public var textView: JotTextView!
+    var textView: JotTextView!
+    
+    //#pragma mark - Properties
     
     /**
      *  The state of the JotViewController. Change the state between JotViewStateDrawing
@@ -85,59 +87,37 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if(self.state != newValue) {
                 self.state = newValue
-                
-                self.textView.hidden = self.textEditView.isEditing == (state == .EditingText)
-                //let isEditing = (state == .EditingText)
-                //func jotViewController(jotViewController: JotViewController, isEditingText isEditing: Bool)
-                if state == .EditingText {
-                    self.delegate!.jotViewController(self, isEditingText: true)
-                }
-                
-                if (state == .Text) {
-                    self.drawingContainer.multipleTouchEnabled = true
-                    self.tapRecognizer!.enabled = false
-                    self.panRecognizer!.enabled = true
-                    self.pinchRecognizer!.enabled = true
-                    self.rotationRecognizer!.enabled = true
-                } else {
-                    self.drawingContainer.multipleTouchEnabled = false
-                    self.tapRecognizer!.enabled = true
-                    self.panRecognizer!.enabled = false
-                    self.pinchRecognizer!.enabled = false
-                    self.rotationRecognizer!.enabled = false
-                }
             }
+        }
+        didSet {
+            let isEditing = (state == .EditingText)
             
-            print("state is \(self.state)")
-
+            print("from state isEditing: \(isEditing)")
+                
+            self.textView.hidden = isEditing
+            self.textEditView.isEditing == isEditing
+            //let isEditing = (state == .EditingText)
+            //func jotViewController(jotViewController: JotViewController, isEditingText isEditing: Bool)
+            if isEditing {
+                self.delegate!.jotViewController(self, isEditingText: true)
+            }
+                
+            if (state == .Text) {
+                self.drawingContainer.multipleTouchEnabled = true
+                self.tapRecognizer!.enabled = true
+                self.panRecognizer!.enabled = true
+                self.pinchRecognizer!.enabled = true
+                self.rotationRecognizer!.enabled = true
+            } else {
+                self.drawingContainer.multipleTouchEnabled = false
+                self.tapRecognizer!.enabled = false
+                self.panRecognizer!.enabled = false
+                self.pinchRecognizer!.enabled = false
+                self.rotationRecognizer!.enabled = false
+            }
         }
     }
  
-    /*
-    {
-        get {
-            return self.state
-        }
-        set(state) {
-            if state != state {
-                self.state = state
-                self.textView.hidden = self.textEditView.isEditing == (state == .EditingText)
-                //let isEditing = (state == .EditingText)
-                //func jotViewController(jotViewController: JotViewController, isEditingText isEditing: Bool)
-                if state == .EditingText {
-                    self.delegate!.jotViewController!(self, isEditingText: true)
-                }
-                /*
-                self.drawingContainer.multipleTouchEnabled =
-                    self.tapRecognizer.enabled =
-                    self.panRecognizer.enabled =
-                    self.pinchRecognizer.enabled =
-                    self.rotationRecognizer.enabled = (state == .Text)
-                */
-            }
-        }
-    }
-    */
 
     /**
      *  The font of the text displayed in the JotTextView and JotTextEditView.
@@ -145,20 +125,6 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *  @note To change the default size of the font, you must also set the
      *  fontSize property to the desired font size.
      */
-    /*
-    public var font: UIFont {
-        get {
-            return self.font
-        }
-        set(font) {
-            if font != font {
-                self.font = font
-                self.textView.font = self.textEditView.font
-                //self.textView.font = self.textEditView.font = font
-            }
-        }
-    }
-    */
     //True model data
     public var font: UIFont = UIFont.systemFontOfSize(20){
         
@@ -166,13 +132,11 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             print("Old value is \(font), new value is \(newValue)")
             if(self.font != newValue) {
+                self.font = newValue
                 self.textView.font = self.textEditView.font
             }
         }
         
-        //value is set
-        
-        //Finaly this
         didSet {
             print("Old value is \(oldValue), new value is \(font)")
         }
@@ -184,73 +148,33 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *
      *  @note This property overrides the size of the font property.
      */
-    /*
-    public var fontSize: CGFloat {
-        get {
-            return self.fontSize
-        }
-        set(fontSize) {
-            if fontSize != fontSize {
-                self.fontSize = fontSize
-                self.textView.fontSize = self.textEditView.fontSize
-                //self.textView.fontSize = self.textEditView.fontSize = fontSize
-            }
-        }
-    }
-    */
     //True model data
     public var fontSize : CGFloat = 16 {
-        
-        //First this
         willSet {
             print("Old value is \(fontSize), new value is \(newValue)")
             if(self.fontSize != newValue) {
-                self.textView.fontSize = self.textEditView.fontSize
+                self.fontSize = newValue
             }
         }
-        
-        //value is set
-        
-        //Finaly this
         didSet {
-            print("Old value is \(oldValue), new value is \(fontSize)")
+            self.textEditView.fontSize = fontSize
+            self.textView.fontSize = fontSize
         }
     }
 
     /**
      *  The color of the text displayed in the JotTextView and the JotTextEditView.
      */
-    /*
-    public var textColor: UIColor {
-        get {
-            return self.textColor
-        }
-        set(textColor) {
-            if textColor != textColor {
-                self.textColor = textColor
-                self.textView.textColor = self.textEditView.textColor
-                //self.textView.textColor = self.textEditView.textColor = textColor
-            }
-        }
-    }
-    */
-    
     //True model data
     public var textColor : UIColor = UIColor.blackColor() {
-        
-        //First this
         willSet {
-            print("Old value is \(textColor), new value is \(newValue)")
             if(self.textColor != newValue) {
-                self.textView.textColor = self.textEditView.textColor
+                self.textColor = newValue
             }
         }
-        
-        //value is set
-        
-        //Finaly this
         didSet {
-            print("Old value is \(oldValue), new value is \(textColor)")
+            self.textView.textColor = textColor
+            self.textEditView.textColor = textColor
         }
     }
 
@@ -261,13 +185,14 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if(self.textString != newValue) {
                 self.textString = newValue
-                
-                if !(self.textView.textString == textString) {
-                    self.textView.textString = textString
-                }
-                if !(self.textEditView.textString == textString) {
-                    self.textEditView.textString = textString
-                }
+            }
+        }
+        didSet {
+            if !(self.textView.textString == textString) {
+                self.textView.textString = textString
+            }
+            if !(self.textEditView.textString == textString) {
+                self.textEditView.textString = textString
             }
         }
     }
@@ -281,9 +206,12 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if textAlignment != newValue {
                 self.textAlignment = newValue
-                self.textView.textAlignment = self.textEditView.textAlignment
-                //self.textView.textAlignment = self.textEditView.textAlignment = textAlignment
             }
+        }
+        didSet {
+            //self.textView.textAlignment = self.textEditView.textAlignment
+            self.textView.textAlignment = textAlignment
+            self.textEditView.textAlignment = textAlignment
         }
     }
 
@@ -294,8 +222,10 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if self.drawingColor != newValue {
                 self.drawingColor = newValue
-                self.drawView.strokeColor = drawingColor
             }
+        }
+        didSet {
+           self.drawView.strokeColor = drawingColor
         }
     }
 
@@ -307,8 +237,10 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if drawingStrokeWidth != newValue {
                 self.drawingStrokeWidth = newValue
-                self.drawView.strokeWidth = drawingStrokeWidth
             }
+        }
+        didSet {
+            self.drawView.strokeWidth = drawingStrokeWidth
         }
     }
 
@@ -320,8 +252,10 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if drawingConstantStrokeWidth != newValue {
                 self.drawingConstantStrokeWidth = newValue
-                self.drawView.constantStrokeWidth = drawingConstantStrokeWidth
             }
+        }
+        didSet {
+            self.drawView.constantStrokeWidth = drawingConstantStrokeWidth
         }
     }
 
@@ -335,8 +269,10 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if !UIEdgeInsetsEqualToEdgeInsets(textEditingInsets, newValue) {
                 self.textEditingInsets = newValue
-                self.textEditView.textEditingInsets = textEditingInsets
             }
+        }
+        didSet {
+           self.textEditView.textEditingInsets = textEditingInsets
         }
     }
 
@@ -353,8 +289,10 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if !UIEdgeInsetsEqualToEdgeInsets(initialTextInsets, newValue) {
                 self.initialTextInsets = newValue
-                self.textView.initialTextInsets = initialTextInsets
             }
+        }
+        didSet {
+            self.textView.initialTextInsets = initialTextInsets
         }
     }
 
@@ -369,13 +307,15 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         willSet {
             if fitOriginalFontSizeToViewWidth != newValue {
                 self.fitOriginalFontSizeToViewWidth = newValue
-                self.textView.fitOriginalFontSizeToViewWidth = fitOriginalFontSizeToViewWidth
-                if fitOriginalFontSizeToViewWidth {
-                    self.textEditView.textAlignment = self.textAlignment
-                }
-                else {
-                    self.textEditView.textAlignment = .Left
-                }
+            }
+        }
+        didSet {
+            self.textView.fitOriginalFontSizeToViewWidth = fitOriginalFontSizeToViewWidth
+            if fitOriginalFontSizeToViewWidth {
+                self.textEditView.textAlignment = self.textAlignment
+            }
+            else {
+                self.textEditView.textAlignment = .Left
             }
         }
     }
@@ -389,18 +329,21 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
     var clipBoundsToEditingInsets: Bool = false {
         willSet {
             if clipBoundsToEditingInsets != newValue {
-                //self.clipBoundsToEditingInsets = clipBoundsToEditingInsets
-                self.textEditView.clipBoundsToEditingInsets = clipBoundsToEditingInsets
+                self.clipBoundsToEditingInsets = newValue
             }
+        }
+        didSet {
+           self.textEditView.clipBoundsToEditingInsets = clipBoundsToEditingInsets
         }
     }
 
     var drawingContainer: JotDrawingContainer!
+    
+    //#pragma mark - Undo
 
     /**
      *  Clears all paths from the drawing in and sets the text to an empty string, giving a blank slate.
      */
-
     public func clearAll() {
         self.clearDrawing()
         self.clearText()
@@ -420,6 +363,8 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         self.textString = ""
         self.textView.clearText()
     }
+    
+    //#pragma mark - Output UIImage
     
     /**
      *  Overlays the drawing and text on the given background image at the full
@@ -457,10 +402,18 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
      *
      *  @return An image of the rendered drawing and text.
      */
-
     public func renderImageWithScale(scale: CGFloat) -> UIImage {
-        print(CGRectGetWidth(self.drawingContainer.frame) * scale)
-        return self.renderImageWithSize(CGSizeMake(CGRectGetWidth(self.drawingContainer.frame) * scale, CGRectGetHeight(self.drawingContainer.frame) * scale))
+        let width = CGRectGetWidth(self.drawingContainer.frame) * scale
+        let height = CGRectGetHeight(self.drawingContainer.frame) * scale
+        
+        print("width is \(width) and height is \(height)")
+        
+        return self.renderImageWithSize(
+            CGSizeMake(
+                CGRectGetWidth(self.drawingContainer.frame) * scale,
+                CGRectGetHeight(self.drawingContainer.frame) * scale
+            )
+        )
     }
     
     /**
@@ -473,7 +426,16 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         return self.renderImageWithSize(CGSizeMake(CGRectGetWidth(self.drawingContainer.frame) * scale, CGRectGetHeight(self.drawingContainer.frame) * scale), onColor: color)
     }
     
+    public func renderImageWithSize(size: CGSize) -> UIImage {
+        let renderDrawingImage: UIImage = self.drawView.renderDrawingWithSize(size)
+        return self.textView.drawTextOnImage(renderDrawingImage)
+    }
     
+    public func renderImageWithSize(size: CGSize, onColor color: UIColor) -> UIImage {
+        let colorImage: UIImage = UIImage.jotImageWithColor(color, size: size) // works
+        let renderDrawingImage: UIImage = self.drawView.drawOnImage(colorImage)
+        return self.textView.drawTextOnImage(renderDrawingImage)
+    }
     
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -482,8 +444,6 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
-
-    
     
     public convenience init() {
         self.init(nibName: nil, bundle: nil)
@@ -516,14 +476,6 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             self.panRecognizer!.delegate = self
             self.tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(JotViewController.handleTapGesture(_:)))
             self.tapRecognizer!.delegate = self
-        
-        //self.drawingContainer.
-        /*
-        self.pinchRecognizer!.delaysTouchesEnded = false
-        self.pinchRecognizer!.delaysTouchesEnded = false
-        self.rotationRecognizer!.delaysTouchesEnded = false
-        self.tapRecognizer!.delaysTouchesEnded = false
-        */
     }
     
     deinit {
@@ -556,17 +508,8 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         self.drawingContainer.addGestureRecognizer(self.rotationRecognizer!)
         self.drawingContainer.addGestureRecognizer(self.pinchRecognizer!)
     }
-
-    public func renderImageWithSize(size: CGSize) -> UIImage {
-        let renderDrawingImage: UIImage = self.drawView.renderDrawingWithSize(size)
-        return self.textView.drawTextOnImage(renderDrawingImage)
-    }
-
-    public func renderImageWithSize(size: CGSize, onColor color: UIColor) -> UIImage {
-        let colorImage: UIImage = UIImage.jotImageWithColor(color, size: size)
-        let renderDrawingImage: UIImage = self.drawView.drawOnImage(colorImage)
-        return self.textView.drawTextOnImage(renderDrawingImage)
-    }
+    
+    //#pragma mark - Gestures
 
     func handleTapGesture(recognizer: UIGestureRecognizer) {
         if !(self.state == .EditingText) {
@@ -581,6 +524,8 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
     func handlePinchOrRotateGesture(recognizer: UIGestureRecognizer) {
         self.textView.handlePinchOrRotateGesture(recognizer)
     }
+    
+    //#pragma mark - JotDrawingContainer Delegate
 
     func jotDrawingContainerTouchBeganAtPoint(touchPoint: CGPoint) {
         print("jotDrawingContainerTouchBeganAtPoint")
@@ -605,6 +550,8 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
             print("drawTouchEnded")
         }
     }
+    
+    //#pragma mark - UIGestureRecognizer Delegate
 
     public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
@@ -617,6 +564,8 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         return false
     }
 
+    //#pragma mark - JotTextEditView Delegate
+    
     public func jotTextEditViewFinishedEditingWithNewTextString(textString: String) {
         if self.state == .EditingText {
             self.state = .Text
@@ -625,10 +574,4 @@ public class JotViewController: UIViewController, JotTextEditViewDelegate, JotDr
         self.delegate!.jotViewController(self, isEditingText: false)
 
     }
-
 }
-/*
-extension JotViewController: UIGestureRecognizerDelegate {
-    
-}
-*/
