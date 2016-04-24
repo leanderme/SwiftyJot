@@ -19,8 +19,9 @@ let kPencilImageName:String = String.fontAwesomeIconWithName(FontAwesome.Pencil)
 let kTextImageName:String = String.fontAwesomeIconWithName(FontAwesome.PaperPlane)
 let kClearImageName: String = String.fontAwesomeIconWithName(FontAwesome.Close)
 let kSaveImageName:String = String.fontAwesomeIconWithName(FontAwesome.Save)
+let kOpenCameraName:String = String.fontAwesomeIconWithName(FontAwesome.Camera)
 
-class ViewController: UIViewController, JotViewControllerDelegate{
+class ViewController: UIViewController, JotViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
     
     let jotViewController: JotViewController = JotViewController()
@@ -28,13 +29,19 @@ class ViewController: UIViewController, JotViewControllerDelegate{
     let saveButton: UIButton = UIButton()
     let clearButton: UIButton = UIButton()
     let toggleDrawingButton: UIButton = UIButton()
+    let cameraButton: UIButton = UIButton()
+    var imagePicker = UIImagePickerController()
+    var imageView : UIImageView?
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        imagePicker.delegate = self
+        
         // Do any additional setup after loading the view, typically from a nib.
         //self.jotViewController.renderImageOnColor(UIColor.blueColor())
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.backgroundColor = UIColor.greenColor()
         
         self.jotViewController.delegate = self
         self.jotViewController.state = .Drawing
@@ -86,11 +93,27 @@ class ViewController: UIViewController, JotViewControllerDelegate{
         self.toggleDrawingButton.setTitle(kTextImageName, forState:.Normal)
         self.toggleDrawingButton.addTarget(self,action: #selector(ViewController.toggleDrawingButtonAction), forControlEvents:.TouchUpInside)
     
+        
         self.view.addSubview(self.toggleDrawingButton)
         self.toggleDrawingButton.snp_makeConstraints { (make) -> Void in
             make.height.equalTo(44)
             make.width.equalTo(44)
             make.right.equalTo(self.view).offset(-4)
+            make.bottom.equalTo(self.view).offset(-4)
+        }
+
+        
+        self.cameraButton.titleLabel!.font = UIFont.fontAwesomeOfSize(24)
+        self.cameraButton.setTitleColor(UIColor.darkGrayColor(), forState: .Normal)
+        self.cameraButton.setTitleColor(UIColor.lightGrayColor(), forState: .Highlighted)
+        self.cameraButton.setTitle(kOpenCameraName, forState:.Normal)
+        self.cameraButton.addTarget(self,action: #selector(ViewController.openCameraButtonAction), forControlEvents:.TouchUpInside)
+        
+        self.view.addSubview(self.cameraButton)
+        self.cameraButton.snp_makeConstraints { (make) -> Void in
+            make.height.equalTo(44)
+            make.width.equalTo(44)
+            make.left.equalTo(self.view).offset(4)
             make.bottom.equalTo(self.view).offset(-4)
         }
     }
@@ -103,16 +126,24 @@ class ViewController: UIViewController, JotViewControllerDelegate{
     //#pragma mark - Actions
     
     func clearButtonAction() {
-        //self.jotViewController.clearAll()
+        self.jotViewController.clearAll()
     }
     
     func saveButtonAction () {
         print("save..")
         let drawnImage: UIImage = self.jotViewController.renderImageWithScale(2, onColor:self.view.backgroundColor!)
-    
-        self.jotViewController.clearAll()
+        
+        /*
+        let backgroundImageView = UIImageView(image: UIImage(named: "iback"))
+        backgroundImageView.frame = view.frame
+        backgroundImageView.contentMode = .ScaleAspectFill
+        view.addSubview(backgroundImageView)
+        view.sendSubviewToBack(backgroundImageView)
+        */
     
         CustomPhotoAlbum.sharedInstance.saveImage(drawnImage, metadata:nil)
+        
+        self.jotViewController.clearAll()
         
     }
     
@@ -132,14 +163,37 @@ class ViewController: UIViewController, JotViewControllerDelegate{
             self.toggleDrawingButton.setTitle(kTextImageName, forState: .Normal)
         }
     }
+    
+    func openCameraButtonAction(sender: AnyObject) {
+        imagePicker.allowsEditing = false
+        imagePicker.sourceType = .PhotoLibrary
+        
+        presentViewController(imagePicker, animated: true, completion: nil)
+    }
 
     
     //#pragma mark - JotViewControllerDelegate
     
     func jotViewController(jotViewController: JotViewController, isEditingText isEditing: Bool) {
-        //self.clearButton.hidden = isEditing
-        //self.saveButton.hidden = isEditing
-        //self.toggleDrawingButton.hidden = isEditing
+        self.clearButton.hidden = isEditing
+        self.saveButton.hidden = isEditing
+        self.toggleDrawingButton.hidden = isEditing
+    }
+    
+    //#pragma mark - UIImagePickerControllerDelegate
+    
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
+        if let pickedImage = info[UIImagePickerControllerOriginalImage] as? UIImage {
+
+            self.jotViewController.drawOnImage(pickedImage)
+
+        }
+        
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
+        dismissViewControllerAnimated(true, completion: nil)
     }
 
 
